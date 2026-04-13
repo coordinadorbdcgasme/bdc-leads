@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BDC · Leads por Agencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#0d1117;--ink2:#1c2333;--ink3:#2d3748;
+  --paper:#f7f6f2;--paper2:#eeece6;--paper3:#e4e1d8;
+  --rule:#d4d0c8;--red:#c0001a;--red-pale:#fde8eb;
+  --gold:#b8860b;--gold-pale:#fdf6e3;--green:#0a6640;
+  --green-pale:#e6f4ed;--blue:#1a3a6b;--blue-pale:#e8eef7;
+  --muted:#7a7567;
+  --font-display:'Syne',sans-serif;--font-body:'Instrument Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:13px;line-height:1.5}
+
+/* HEADER */
+.site-header{background:var(--ink);color:var(--paper);padding:0 24px;display:flex;align-items:stretch;justify-content:space-between;border-bottom:3px solid var(--red)}
+.header-brand{display:flex;align-items:center;gap:12px;padding:16px 0}
+.brand-mark{width:36px;height:36px;background:var(--red);border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:18px;color:white;letter-spacing:-1px;flex-shrink:0}
+.brand-text h1{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:2px;color:var(--paper);line-height:1}
+.brand-text p{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(247,246,242,.45);margin-top:3px}
+.header-meta{display:flex;align-items:center;padding:0}
+.meta-item{text-align:center;padding:0 14px;border-left:1px solid rgba(255,255,255,.08);height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.meta-num{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1}
+.meta-num.r{color:var(--red)}.meta-num.g{color:#4ade80}.meta-num.y{color:#fbbf24}
+.meta-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(247,246,242,.4);margin-top:2px}
+
+/* NAV */
+.agency-nav{position:sticky;top:0;z-index:100;background:var(--ink2);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 16px;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.agency-nav::-webkit-scrollbar{display:none}
+.nav-btn{background:transparent;border:none;color:rgba(247,246,242,.45);font-family:var(--font-display);font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:13px 12px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.nav-btn:hover{color:rgba(247,246,242,.8)}
+.nav-btn.active{color:var(--paper);border-bottom-color:var(--red)}
+.nav-badge{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);color:rgba(247,246,242,.6);font-size:9px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:4px;font-family:var(--font-body);letter-spacing:0}
+.nav-btn.active .nav-badge{background:var(--red);color:white}
+
+/* MAIN */
+main{max-width:1400px;margin:0 auto;padding:24px 16px 80px}
+.agency-section{display:none}.agency-section.visible{display:block}
+.agency-title-bar{display:flex;align-items:baseline;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+.agency-name{font-family:var(--font-display);font-size:28px;font-weight:800;letter-spacing:1px;line-height:1}
+.agency-subtitle{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted)}
+
+/* STATS */
+.agency-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:24px}
+.astat{background:var(--paper2);border:1px solid var(--rule);border-radius:4px;padding:10px 12px}
+.astat-val{font-family:var(--font-display);font-size:22px;font-weight:700;line-height:1}
+.astat-val.blue{color:var(--blue)}.astat-val.gold{color:var(--gold)}.astat-val.green{color:var(--green)}.astat-val.red{color:var(--red)}
+.astat-key{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+
+/* APV GROUP */
+.apv-group{margin-bottom:24px;border:1px solid var(--rule);border-radius:6px;overflow:hidden;animation:slideIn .3s ease forwards;opacity:0;transform:translateY(8px)}
+@keyframes slideIn{to{opacity:1;transform:translateY(0)}}
+.apv-header{background:var(--ink);color:var(--paper);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.apv-header.unassigned{background:var(--ink3)}
+.apv-name{font-family:var(--font-display);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;line-height:1.3}
+.apv-chips{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.apv-count{background:rgba(255,255,255,.12);color:rgba(247,246,242,.7);font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:2px;font-family:var(--font-body)}
+.apv-fac-badge{background:var(--green);color:white;font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 7px;border-radius:2px;text-transform:uppercase}
+
+/* TABLE */
+.leads-table-wrap{overflow-x:auto;background:white}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{background:var(--paper2);padding:8px 12px;text-align:left;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--rule);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--paper3);transition:background .12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--paper2)}
+tbody td{padding:9px 12px;vertical-align:middle}
+.td-id{font-family:monospace;font-size:10px;color:var(--muted);white-space:nowrap}
+.td-nombre{font-weight:600;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-auto{font-weight:700;font-size:10px;letter-spacing:.5px;color:var(--blue);text-transform:uppercase}
+
+/* AGENT BADGE */
+.agent-badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.ag-EDGAR{background:#dbeafe;color:#1e40af}.ag-JAQUELINE{background:#d1fae5;color:#065f46}
+.ag-ESTEFANIA{background:#fef3c7;color:#92400e}.ag-FABIOLA{background:#fee2e2;color:#991b1b}
+.ag-LINO{background:#ede9fe;color:#4c1d95}.ag-NAYELY{background:#ffedd5;color:#9a3412}
+.ag-NANCI{background:#fce7f3;color:#9d174d}
+
+/* PIPELINE */
+.pipeline{display:flex;gap:3px;align-items:center}
+.step{display:flex;flex-direction:column;align-items:center;gap:2px}
+.step-dot{width:22px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border:1.5px solid;flex-shrink:0}
+.step-dot.done{border-color:#059669;background:#ecfdf5;color:#059669}
+.step-dot.done.final{background:#059669;color:white;box-shadow:0 0 0 3px rgba(5,150,105,.2)}
+.step-dot.pend{border-color:#e5e7eb;background:#f9fafb;color:#d1d5db}
+
+/* DATE */
+.date-cell{font-family:monospace;font-size:10px;color:var(--ink3);white-space:nowrap}
+.date-cell.empty{color:#d1d5db}
+
+/* PROGRESS */
+.prog-wrap{display:flex;align-items:center;gap:5px;min-width:70px}
+.prog-bar{flex:1;background:var(--paper3);border-radius:2px;height:5px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px}
+.prog-pct{font-size:10px;font-weight:700;color:var(--muted);white-space:nowrap;width:26px;text-align:right}
+
+/* COMMENT BUTTON */
+.btn-comment{background:none;border:1.5px solid var(--rule);border-radius:3px;padding:3px 7px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:var(--font-body);transition:all .15s}
+.btn-comment:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-pale)}
+.btn-comment.has-comment{border-color:#d97706;color:#92400e;background:#fef3c7}
+.btn-comment.has-comment:hover{border-color:#92400e;background:#fde68a}
+
+/* LEGEND */
+.legend{display:flex;gap:12px;padding:8px 16px;background:var(--paper2);border-top:1px solid var(--rule);flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:8.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.legend-dot{width:11px;height:11px;border-radius:2px;border:1.5px solid #059669;background:#ecfdf5}
+.legend-dot.pend{border-color:#e5e7eb;background:#f9fafb}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,17,23,.65);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.modal-overlay.open{display:flex}
+.modal-box{background:white;border-radius:8px;width:100%;max-width:520px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.modal-header{background:var(--ink);color:var(--paper);padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.modal-title{font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:1px;line-height:1.3}
+.modal-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(247,246,242,.45);margin-top:4px}
+.modal-close{background:rgba(255,255,255,.1);border:none;color:var(--paper);width:28px;height:28px;border-radius:3px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.modal-close:hover{background:rgba(255,255,255,.2)}
+.modal-body{padding:20px}
+.modal-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px}
+.modal-comment{background:var(--paper2);border:1px solid var(--rule);border-radius:4px;padding:14px 16px;font-size:13px;line-height:1.6;color:var(--ink3)}
+.modal-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.modal-chip{background:var(--paper2);border:1px solid var(--rule);border-radius:3px;padding:3px 9px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+
+/* MOBILE CARDS */
+.lead-cards{display:none}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:700px){
+  .leads-table-wrap{display:none}
+  .lead-cards{display:block}
+
+  .lead-card{background:white;border-bottom:1px solid var(--paper3);padding:12px 14px;cursor:pointer;transition:background .12s}
+  .lead-card:last-child{border-bottom:none}
+  .lead-card:hover{background:var(--paper2)}
+  .lc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+  .lc-nombre{font-weight:700;font-size:13px;line-height:1.3;flex:1}
+  .lc-id{font-family:monospace;font-size:9px;color:var(--muted);margin-top:2px}
+  .lc-mid{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .lc-auto{font-weight:700;font-size:11px;color:var(--blue);text-transform:uppercase;letter-spacing:.5px}
+  .lc-pipeline{display:flex;gap:3px;margin-bottom:8px}
+  .lc-step{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+  .lc-dot{width:100%;max-width:38px;height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1.5px solid}
+  .lc-dot.done{border-color:#059669;background:#ecfdf5;color:#059669}
+  .lc-dot.done.final{background:#059669;color:white}
+  .lc-dot.pend{border-color:#e5e7eb;background:#f9fafb;color:#d1d5db}
+  .lc-lbl{font-size:7px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+  .lc-bottom{display:flex;align-items:center;gap:8px}
+  .lc-prog{display:flex;align-items:center;gap:6px;flex:1}
+  .lc-bar{flex:1;background:var(--paper3);border-radius:2px;height:4px;overflow:hidden}
+  .lc-fill{height:100%;border-radius:2px}
+  .lc-pct{font-size:10px;font-weight:700;color:var(--muted);width:28px;text-align:right}
+  .lc-comment-dot{width:8px;height:8px;border-radius:50%;background:#d97706;flex-shrink:0;display:none}
+  .lc-comment-dot.visible{display:block}
+
+  .header-meta{display:flex}
+  .meta-item{padding:0 10px}
+  .meta-num{font-size:18px}
+  .meta-label{font-size:7px;letter-spacing:1px}
+  .site-header{padding:0 14px}
+  .header-brand{padding:12px 0}
+  .brand-text h1{font-size:15px;letter-spacing:1.5px}
+  main{padding:16px 12px 80px}
+  .agency-stats{grid-template-columns:repeat(3,1fr);gap:6px}
+  .apv-name{font-size:10px;letter-spacing:1px}
+  .legend{padding:8px 12px;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-brand">
+    <div class="brand-mark">N</div>
+    <div class="brand-text">
+      <h1>BDC · LEADS</h1>
+      <p>Nissan &mdash; Seguimiento por Agencia &amp; APV</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-item"><div class="meta-num r" id="hdr-total">0</div><div class="meta-label">Total</div></div>
+    <div class="meta-item"><div class="meta-num y" id="hdr-citas">0</div><div class="meta-label">Citas</div></div>
+    <div class="meta-item"><div class="meta-num g" id="hdr-facturas">0</div><div class="meta-label">Fact.</div></div>
+  </div>
+</header>
+
+<nav class="agency-nav" id="agencyNav"></nav>
+<main id="mainContent"></main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="commentModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalName">—</div>
+        <div class="modal-sub" id="modalSub">—</div>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-label">Comentario BDC</div>
+      <div class="modal-comment" id="modalComment">—</div>
+      <div class="modal-meta" id="modalMeta"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const RAW = {"CORDOBA":{"MARIA DE LOS ANGELES CHAVEZ HERNANDEZ":[{"id":"25310008","nombre":"HELIODORO RODRIGUEZ GUZMAN","agente":"EDGAR","auto":"MAGNITE","asignacion":"11-03-26","cita":"14-03-26","show":"07-04-26","documentos":"04-08-26","solicitud":"07-04-26","factura":"08-04-26","prueba":null}],"JOSE LEONARDO MONTES RUEDA":[{"id":"25591584","nombre":"ENRIQUE OSORIO VAZQUEZ","agente":"JAQUELINE","auto":"KICKS","asignacion":"30-03-26","cita":"04-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25641726","nombre":"MELBI MONTIEL GONZALEZ","agente":"ESTEFANIA","auto":"X-TRAIL","asignacion":"08-04-26","cita":"10-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25645332","nombre":"JOSE MANUEL ARELLANO CONTRERAS","agente":"JAQUELINE","auto":"FRONTIER","asignacion":"08-04-26","cita":"11-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25441768","nombre":"DANIEL FLORES GONZ\u00c1LEZ","agente":"EDGAR","auto":"MARCH","asignacion":"20-03-26","cita":"10-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"RAMON ENRIQUE CHACON SANCHEZ":[{"id":"25600908","nombre":"OMAR AHUMADA PACHECO","agente":"ESTEFANIA","auto":"VERSA","asignacion":"31-03-26","cita":"01-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25665118","nombre":"EFRAIN TELLEZ GARRIDO","agente":"JAQUELINE","auto":"NP300","asignacion":"08-04-26","cita":"11-04-26","show":"10-04-26","documentos":"04-11-26","solicitud":"11-04-26","factura":null,"prueba":null},{"id":"25638482","nombre":"HEBER RUBIO","agente":"FABIOLA","auto":"FRONTIER","asignacion":"06-04-26","cita":"06-04-26","show":"06-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25641630","nombre":"JAVIER MARQUEZ SANTOS","agente":"EDGAR","auto":"X-TRAIL","asignacion":"06-04-26","cita":"07-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"ANTELMO ILLESCAS CORTES":[{"id":"25599356","nombre":"ROQUE VIDAL MARTINEZ LUNA","agente":"FABIOLA","auto":"FRONTIER","asignacion":"01-04-26","cita":"04-04-26","show":"04-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25665990","nombre":"JESUS ALBERTO SOLANO PAZ","agente":"EDGAR","auto":"MARCH","asignacion":"08-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"JULIO CESAR SANTOS VAZQUEZ":[{"id":"25598958","nombre":"JULIA ANDRADE","agente":"LINO","auto":"MARCH","asignacion":"31-03-26","cita":"01-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25594746","nombre":"LIDIA ESTRADA S\u00c1NCHEZ","agente":"EDGAR","auto":"MARCH","asignacion":"31-03-26","cita":"04-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25646506","nombre":"ETHAN JHAZIEL SANTIAGO MEZS","agente":"EDGAR","auto":"VERSA","asignacion":"11-04-26","cita":"10-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25402022","nombre":"CATALINA GONZ\u00c1LEZ VALLEJO","agente":"EDGAR","auto":"MARCH","asignacion":"25-03-26","cita":"01-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25507920","nombre":"DINORA VAZQUEZ ORTIZ","agente":"LINO","auto":"MARCH","asignacion":"02-04-26","cita":"11-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"JOSE GABRIEL RAMIREZ RAFFAELLI":[{"id":"25602058","nombre":"JULIA ROSETE GUTIERREZ","agente":"NAYELY","auto":"FRONTIER","asignacion":"31-03-26","cita":"31-03-26","show":"31-03-26","documentos":"03/31/2026","solicitud":"01-04-26","factura":null,"prueba":null},{"id":"25594240","nombre":"ADRIAN DE LA LUZ BLANCO","agente":"NAYELY","auto":"VERSA","asignacion":"07-04-26","cita":"07-04-26","show":null,"documentos":"04-07-26","solicitud":null,"factura":null,"prueba":null},{"id":"25419142","nombre":"FRANCISCO JAVIER SANCHEZ","agente":"NAYELY","auto":"VERSA","asignacion":"08-04-26","cita":"11-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25670458","nombre":"BERNARDO FERN\u00c1NDEZ","agente":"NAYELY","auto":"VERSA","asignacion":"12-04-26","cita":"12-04-26","show":"12-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25657576","nombre":"CESAR COLOMBO CASTRO","agente":"NAYELY","auto":"VERSA","asignacion":"08-04-26","cita":"10-04-26","show":"09-04-26","documentos":"04-09-26","solicitud":null,"factura":null,"prueba":null},{"id":"25607660","nombre":"ISABEL GONZALEZ MARTINEZ","agente":"NAYELY","auto":"VERSA","asignacion":"08-04-26","cita":"11-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"LUIS ARMANDO NAVA MORALES":[{"id":"25584706","nombre":"LAURA PATRICIA HERNANDEZ AREVALO","agente":"NAYELY","auto":"FRONTIER","asignacion":"07-04-26","cita":"07-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25578784","nombre":"ENRIQUE PALMA","agente":"NAYELY","auto":"VERSA","asignacion":"30-03-26","cita":"04-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25570972","nombre":"ROC\u00cdO SANDOVAL OJEDA","agente":"NAYELY","auto":"VERSA","asignacion":"27-03-26","cita":"11-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25602010","nombre":"FELICIANO CERDA PULIDO","agente":"NAYELY","auto":"SENTRA","asignacion":"01-04-26","cita":"03-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"APV NO ASIGNADO":[{"id":"25686404","nombre":"EMILI SOCORRO LUNA P\u00c1EZ","agente":"LINO","auto":"V-DRIVE","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25686096","nombre":"ERIKA NEPOMUCENO HERN\u00c1NDEZ","agente":"LINO","auto":"VERSA","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25685162","nombre":"LUIS GUTI\u00c9RREZ","agente":"LINO","auto":"ALTIMA","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25605560","nombre":"EDUARDO ESQUIVEL","agente":"ESTEFANIA","auto":"MARCH","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}]},"HUATUSCO":{"FERMIN HUMBERTO RODRIGUEZ QUIROZ":[{"id":"25507930","nombre":"ERNESTO YOBAL LOPEZ","agente":"JAQUELINE","auto":"FRONTIER","asignacion":"01-04-26","cita":"08-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25679650","nombre":"ROSA TLAMANCA ROMERO","agente":"EDGAR","auto":"VERSA","asignacion":"10-04-26","cita":"10-04-26","show":"10-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null}],"APV NO ASIGNADO":[{"id":"25684732","nombre":"CRISTHIAN PACHECO","agente":"LINO","auto":"-","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}]},"JUCHITAN":{"DIDIANA COLLADO ALCAZAR":[{"id":"25511138","nombre":"JOSE ALFREDO ALVARADO RUIZ","agente":"NANCI","auto":"MARCH","asignacion":"25-03-26","cita":"07-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25650936","nombre":"MARIANA CORDOBA","agente":"LINO","auto":"FRONTIER","asignacion":"09-04-26","cita":"13-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25648594","nombre":"MARLON VILLALOBOS GUZMAN","agente":"FABIOLA","auto":"SENTRA","asignacion":"07-04-26","cita":"09-04-26","show":"09-04-26","documentos":"04-09-26","solicitud":"09-04-26","factura":null,"prueba":null},{"id":"25627608","nombre":"JORGE RAMOS RUIZ","agente":"ESTEFANIA","auto":"MARCH","asignacion":"04-04-26","cita":"05-04-26","show":"05-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25551776","nombre":"NATANAEL ROJAS","agente":"LINO","auto":"MARCH","asignacion":"27-03-26","cita":"05-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"ALEJANDRA GARCIA MARTINEZ":[{"id":"25673392","nombre":"YULISSA VARGAS HERNANDEZ","agente":"NAYELY","auto":"VERSA","asignacion":"09-04-26","cita":"09-04-26","show":null,"documentos":"04-09-26","solicitud":null,"factura":null,"prueba":null},{"id":"25584252","nombre":"SANDRA LUZ SOLANA RAMIREZ","agente":"NAYELY","auto":"FRONTIER","asignacion":"31-03-26","cita":"01-04-26","show":"01-04-26","documentos":"04-02-26","solicitud":"02-04-26","factura":null,"prueba":null},{"id":"25595530","nombre":"ANTONIO MIJANGOS ORDAZ","agente":"NAYELY","auto":"X-TRAIL","asignacion":"08-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"SAMUEL CASANOVA VELAZQUEZ":[{"id":"25591160","nombre":"JOSE ANTONIO FIGUEROA","agente":"NAYELY","auto":"VERSA","asignacion":"30-03-26","cita":"01-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}]},"MATIAS ROMERO":{"SAMUEL CASANOVA VELAZQUEZ":[{"id":"25658812","nombre":"JOS\u00c9 L\u00d3PEZ JAIN","agente":"NAYELY","auto":"FRONTIER","asignacion":"08-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}]},"ORIZABA":{"IMANOL PUERTA REYES":[{"id":"23592429","nombre":"LUZ GABRIELA HERNANDEZ HERNANDEZ","agente":"NANCI","auto":"FRONTIER","asignacion":"11-11-25","cita":"19-11-25","show":"24-11-25","documentos":"03/26/2026","solicitud":"27-03-26","factura":"07-04-26","prueba":null}],"ERICK MORENO ROJAS":[{"id":"25585046","nombre":"JAIME ALFREDO AURIOLES","agente":"EDGAR","auto":"MARCH","asignacion":"31-03-26","cita":"07-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25671034","nombre":"JAIR SORIANO REYES","agente":"JAQUELINE","auto":"NP300","asignacion":"09-04-26","cita":"09-04-26","show":null,"documentos":"04-10-26","solicitud":null,"factura":null,"prueba":null},{"id":"25659286","nombre":"JUAN CARLOS MORLES HERNANDEZ","agente":"EDGAR","auto":"VERSA","asignacion":"08-04-26","cita":"09-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25646280","nombre":"OMAR GONZALEZ SANCHEZ","agente":"LINO","auto":"VERSA","asignacion":"10-04-26","cita":null,"show":null,"documentos":"04-10-26","solicitud":null,"factura":null,"prueba":null},{"id":"25646250","nombre":"CARLOS MAXIMILIANO MOTA ROMAN","agente":"FABIOLA","auto":"MARCH","asignacion":"07-04-26","cita":"10-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25432652","nombre":"ANA NAVARRO","agente":"ESTEFANIA","auto":"MAGNITE","asignacion":"01-04-26","cita":"02-04-26","show":"02-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null}],"JAIR RUEDA VAZQUEZ":[{"id":"25440258","nombre":"JOSE EUSTOLIO ROSAS ROSAS","agente":"ESTEFANIA","auto":"URVAN","asignacion":"24-03-26","cita":"04-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25648468","nombre":"FEDERICO GARCIA","agente":"LINO","auto":"MAGNITE","asignacion":"11-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25633190","nombre":"JOSE DANIEL CORONA SOLANO","agente":"ESTEFANIA","auto":"VERSA","asignacion":"06-04-26","cita":"10-04-26","show":"10-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null}],"APV NO ASIGNADO":[{"id":"25689968","nombre":"CARLOS AQUINO","agente":"FABIOLA","auto":"-","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25688866","nombre":"ROGELIO CABALLERO","agente":"LINO","auto":"-","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"LUIS ARMANDO NAVA MORALES":[{"id":"25672174","nombre":"ARTEMIO L\u00c1ZARO L\u00c1ZARO","agente":"NAYELY","auto":"VERSA","asignacion":"10-04-26","cita":"11-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"ENRIQUE HERNANDEZ FLORES":[{"id":"25616914","nombre":"MIGUEL GUERRA SANDOVAL","agente":"LINO","auto":"VERSA","asignacion":"10-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}]},"SALINA CRUZ":{"ALEJANDRO SANCHEZ CASTRO":[{"id":"23723637","nombre":"LIZBETH JIMENEZ BAUTISTA","agente":"FABIOLA","auto":"VERSA","asignacion":"16-11-25","cita":"17-11-25","show":"04-04-26","documentos":"04-04-26","solicitud":"04-04-26","factura":"07-04-26","prueba":null}],"EDUARDO DE JES\u00daS MU\u00d1OZ CERVANTES":[{"id":"25314742","nombre":"JOSE MARIA SIBAJA ZEPEDA","agente":"LINO","auto":"MAGNITE","asignacion":"11-03-26","cita":"04-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25626460","nombre":"DIANA LAURA RAMIREZ SANTOS","agente":"JAQUELINE","auto":"FRONTIER","asignacion":"07-04-26","cita":"13-04-26","show":null,"documentos":"04-07-26","solicitud":null,"factura":null,"prueba":null}],"JOSE GUADALUPE ALTAMIRANO LUIS":[{"id":"25659904","nombre":"CESAR LOPEZ","agente":"ESTEFANIA","auto":"SENTRA","asignacion":"08-04-26","cita":"08-04-26","show":"08-04-26","documentos":null,"solicitud":null,"factura":null,"prueba":null}],"YARA LOPEZ NAJERA":[{"id":"25607726","nombre":"GABRIEL BAEZ BEGUERISSE","agente":"JAQUELINE","auto":"PATHFINDER","asignacion":"01-04-26","cita":"11-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}]},"TIERRA BLANCA":{"JOSE MARIA LOMELI OJINAGA":[{"id":"25498928","nombre":"JUAN JOSE CANO CANDELARIO","agente":"FABIOLA","auto":"MARCH","asignacion":"25-03-26","cita":"04-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"ELEAZAR ENRIQUE COLORADO PRIETO":[{"id":"25491108","nombre":"JOSE LUIS LOPEZ PAVON","agente":"NAYELY","auto":"MARCH","asignacion":"24-03-26","cita":"25-03-26","show":null,"documentos":"03/27/2026","solicitud":"01-04-26","factura":null,"prueba":null}]},"TUXTEPEC":{"VALERIA DE JESUS RODRIGUEZ PEON":[{"id":"25508042","nombre":"CRESCENCIO VALERIO RAMIREZ","agente":"ESTEFANIA","auto":"VERSA","asignacion":"07-04-26","cita":"09-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25508058","nombre":"JOSE HERNANDEZ LEON","agente":"NANCI","auto":"VERSA","asignacion":"31-03-26","cita":"06-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25684424","nombre":"ABUNDIO CRUZ LOPEZ","agente":"LINO","auto":"FRONTIER","asignacion":"11-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"ITZEL BEATRIZ SALAZAR ESPINOSA":[{"id":"25398088","nombre":"JOAQUIN ALEJANDRO AGUILAR","agente":"ESTEFANIA","auto":"FRONTIER","asignacion":"17-03-26","cita":"04-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"JOSE ANTONIO PEREZ MARTINEZ":[{"id":"25575184","nombre":"VICTOR CORREA","agente":"LINO","auto":"MAGNITE","asignacion":"28-03-26","cita":"06-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25590408","nombre":"LUIS MANUEL RUDO ALEJANDRO","agente":"FABIOLA","auto":"MARCH","asignacion":"30-03-26","cita":"01-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25623786","nombre":"JESSICA MARIANA IGNACIO PEDRO","agente":"JAQUELINE","auto":"MAGNITE","asignacion":"04-04-26","cita":"11-04-26","show":null,"documentos":"04-04-26","solicitud":null,"factura":null,"prueba":null}],"ERIKA MORENO GONZALEZ":[{"id":"25592550","nombre":"ANTONIO ROJAS RIVERON","agente":"JAQUELINE","auto":"V-DRIVE","asignacion":"30-03-26","cita":"04-04-26","show":"04-04-26","documentos":"03/30/2026","solicitud":"04-04-26","factura":null,"prueba":null},{"id":"25639360","nombre":"SANDRA HERNANDEZ TAPIA","agente":"JAQUELINE","auto":"FRONTIER","asignacion":"08-04-26","cita":"17-04-26","show":"10-04-26","documentos":"04-08-26","solicitud":"10-04-26","factura":null,"prueba":null}],"ROSA MARIA GARCIA LUNA":[{"id":"25572884","nombre":"EUCARIO DE DIOS LUCAS","agente":"FABIOLA","auto":"FRONTIER","asignacion":"27-03-26","cita":"10-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25572254","nombre":"FAUSTINO RODRIGUEZ CASTRO","agente":"ESTEFANIA","auto":"MAGNITE","asignacion":"27-03-26","cita":"07-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25672496","nombre":"ROSARIO ELIZALDE","agente":"ESTEFANIA","auto":"FRONTIER","asignacion":"09-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null},{"id":"25650302","nombre":"DANIELA HUBER MONTERO","agente":"EDGAR","auto":"MARCH","asignacion":"07-04-26","cita":"12-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"APV NO ASIGNADO":[{"id":"25691042","nombre":"FRANCISCO JAVIER REYES SANTAMAND","agente":"JAQUELINE","auto":"VERSA","asignacion":null,"cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"MARIA ELENA GUEVARA TRUJILLO":[{"id":"25666342","nombre":"JOS\u00c9 DE JES\u00daS VALENCIA BONOLA","agente":"NAYELY","auto":"FRONTIER","asignacion":"09-04-26","cita":"10-04-26","show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}],"SIRENIA DIAZ LAVALLE":[{"id":"25613390","nombre":"BERTIN BERNABE BERNABE","agente":"LINO","auto":"VERSA","asignacion":"02-04-26","cita":null,"show":null,"documentos":null,"solicitud":null,"factura":null,"prueba":null}]}};
+
+const COMMENTS = {"25402022":"Se le llama por Ublux, comenta que por el momento ya no tiene interés, se le cuestiona el motivo, comenta que no cuenta con el enganche, se revisa con el apv","25594746":"El cliente informa que ha ocurrido el fallecimiento de un familiar, lo que ha generado gastos imprevistos y, en consecuencia, pospondrá su compra de manera indefinida.","25641630":"Sí, realizó una prueba de manejo. No se ingreso solicitud de crédito y el cliente está evaluando si procederá con la compra.","25585046":"El cliente tiene varias preguntas sobre las cotizaciones proporcionadas por el APV. Se le extendió una invitación para visitar la agencia, pero indicó que no le es posible asistir por el trabajo; se le pide apoyo al APV con las cotizaciones.","25646506":"Se está siguiendo el proceso de solicitud de Sicrea para el plan sin enganche. Se ha compartido la documentación completa y aún no hemos recibido su visita.","25441768":"Cliente no pudo asisitir a la agencia el 20/03/2026 por su trabajo y se reagenda para el 10/04/2026, no asiste y no se ha logro contactarlo.","25679650":"La clienta se presentó en la agencia y se ingresó una solicitud de crédito para un vehículo March. La clienta mencionó que no se le ofreció una prueba de manejo.","25605560":"Cliente me pide informacion la mando, ya no contesta le mando whatsapp nuevamente y le llamo por ublux pero no obtengo respuesta.","25672496":"Apv comenta esta en curso y me da retro despues de 6:30, la clienta no concreto cita le llamo por ublux para agendar pero no contesta.","25600908":"Cliente no asistio a cita, apv lo contacta pero no contesta, le mando mensaje y llamo pero no obtengo respuesta.","25432652":"Cliente comenta a apv y a mi que compro en volkswagen ya que la camioneta Kicks se le hizo cara y la Magnite muy chica.","25440258":"Cliente no se presento, no contesta llamadas ni whatsapp de apv ni mias.","25398088":"Cliente no se presenta, a la apv no le contesto ni whatsapp ni llamadas, le marco por ublux y le mando whatsapp no obtengo respuesta.","25627608":"Asistio a cita se le mostro la unidad de interes queria un coche automatico la apv le menciono un demo se le mando el precio pero cliente ya no contesta, me trato de comunicar por llamada en ublux y mensaje de whatsapp y no contesta.","25572254":"Cliente reagendara cita pero no contesta llamadas ni mensajes de apv, le mando whatsapp y le marco por ublux no contesta.","25659904":"Pasa a agencia comenta cliente le interesa el vehiculo y comenta pasara al dia siguiente a dejar enganche pero no se presenta y no contesta llamada por ublux.","25508042":"Comenta apv se presenta a cita ingresa solicitud de credito, se checaran alternativas ya que no cuenta con comprobante de ingresos, yo me estoy manteniendo comunicada con el cliente para ver el avance de su autorizacion.","25641726":"No se presenta a cita comenta apv que dejo de contestar mensajes de whatsapp no contesta llamadas, le marco por ublux y le dejo mensaje de whatsapp no contesta.","25633190":"Cliente asiste a cita muestra interes pero solo cuenta con $30,000 de enganche y quiere mensualidades mas bajas comenta apv. trate de comunicarme con el pero no contesta ni whatsapp ni llamdas.","25689968":"SE REALIZA LLAMADA POR UBLUX Y SE AGENDA CITA PARA EL DIA 18 DE ABRIL A LAS 11:00AM","25590408":"LE MARQUE POR UBLEX, NO CONTESTO, SE REALIZA LLAMADA POR TELEFONO FIJO Y NO RESPONDE, LE PREGUNTAMOS A APV LA RETRO Y COMENTA QUE NO LE DA RESPUESTA Y NO LLEGO A CITA, LE DEJAMOS MENSAJE ESPERANDO RESPONDA PARA SEGUIMIENTO","25498928":"NO LLEGO A CITA, YA HABIA REAGENDADO, LE MARQUE POR UBLUX Y ME COLGO LA LLAMADA, SE LE MARCA TAMBIEN POR TELEFONO FIJO Y NO CONTESTO, LE PEDIMOS RETRO AL APV Y COMENTA QUE TAMBIEN NO LE DA RESPUESTA, LE DEJAMOS MENSAJE ESPERAMOS RESPUESTA","25599356":"LE MARQUE POR UBLUX Y EL CLIENTE COMENTA QUE YA HABIA HABLADO CON EL APV, QUE YA ADQUIRIO UNA AUNIDAD EN OTRO LADO, LE PREGUNTO DONDE Y MENCIONA QUE LO ADQUIRIO EN MITSUBISHI","25638482":"LE REALIZO LLAMADA POR UBLUX Y ME CUELGA, SE LE REALIZA POR TELEFONO FIJO Y NO RESPONDE, LE PREGUNTAMOS AL APV Y COMENTA QUE NO HAY UN AVANCE CONCRETO YA QUE EL CLIENTE LE MENCIONO CUANDO VINO A LA AGENCIA QUE SERIA POR CAJA POPULAR PERO NO DA RESPUESTAS EL CLIENTE, LO DEJA EN VISTO, ASI QUE DEJE UN WHATSAPP ESPERANDO RESPUESTA","25648594":"APV COMENTA QUE EL DIA DE HOY 13/04 EL CLIENE IRA A DEJAR ENGANCHE, LE COMENTE QUE EN CUANTO LLEGUE A LA AGENCIA ME AVISA PARA ACTUALZIR ESTATUS","25646250":"NO LLEGO A CITA, LE MARQUE POR OBLUX, POR WHATSAPP Y NO RESPONDE, SE LE MANDA MENSAJE ESPERANDO RESPUESTA PARA DARLE SEGUIMIENTO","25572884":"EL CLIENTE COMENTA QUE SE PRESENTO UNA EMERGENCIA DE SALUD FAMILAIR Y POR ELLO NO LE INTERESA POR AHORA ADQUIRIR UN AUTO, LE PROPONGO DARLE SEGUIMIENTO DENTRO DE UN MES PARA DARLE UNA NUEVA OFERTA Y EL CLIENTE ACEPTA","25691042":"cliente asignado el día de hoy esta en seguimiento con Sirenia para acordar si lleva su auto a avaluó y se realiza toma para la compra","25591584":"comenta apv Leonardo Montes que el cliente no les responde los mensajes , el cliente comento por llamada que asisitio a la agencia y que esta revisando sus cotizaciones se pregunto quien le atendio y colgo llamada","25592550":"cliente asisitio a la agencia ingreso solicitud esta en rechazo automatico por mal Buro sin alternativas , se invita a ingresar solicitud a nombre de algún familiar , no acepta","25507930":"cliente no asisitio a su cita , se le han enviado mensajes y realizado llamadas tambien por parte de apv Fermín y no tenemos respuesta alguna","25671034":"cliente envio sus documentos se le compartieron las ligas para ingresar su solicitud , pero ya no responde las llamadas ni los mensajes , tambie se contacto por whtassapp anterior y dejo en visto","25645332":"comenta Leonarado que se encuentra en seguimiento con el cliente le ha comaprtido cotizaciones y esta validando con su esposa en espera de respuesta para continuar con el proceso 13/04/2026","25607726":"reagendo cita para el día sabado 11/04/2026 , no asisite se le ha realizado llamadas no responde ni los mensajes 13/04/2026","25623786":"comenta apv Jose Antonio Perez que se enviaron cotizaciones , la clienta trabaja en estado de México cuando ella pueda viajar a Tuxtepec visitara la agencia no quiso firmar para solicitudd","25665118":"cliente acude a al agencia el dia viernes 10 de abril se ingresa solicitud de credito no realiza prueba de manenejo ya que no hay camioneta np300 para brueba , salio aprobado ya se notifico en espera que conteste y nos indique cuando deposita el enganche se le envio mensaje y llamada 13/04/2026","25626460":"comenta apv Eduardo de Jesus que se le enviarón varias cotizaciones ,la clienta comento solo esta checando la información por ahora no comprara , más adelante .","25639360":"clienta aprobada , el día de hoy 13/04/2026 se tuvo contacto con ella y su esposo comenta se enfermaron y compraran en Mayo , ya que tuvo otros gastos","25686404":"Se comparte info del Vdrive, no responde llamada de ublux ni de telefono de oicina, ni mensajes, se vuelve a contactar y no da respuesta","25686096":"Se le asigna asesor de Córdoba, Jose Leonardo Montes Rueda, lo quiere para taxi, con presuepuesto de 60k hasta 48 meses, apv le contacta","25685162":"Se le contacta por llamada de ublux y el telefono de oficina pero no da respuesta, ignora los mensajes","25684732":"Se le llama al lead, respode por el telefono de oficina, indica que no esta interesado en nada, solo le apretó al botón porque le aprecio nuestra publicidad","25688866":"Se le contacta por llamada de ublux y el telefono de oficina pero no da respuesta, ignora los mensajes","25648468":"Cliente piensa comprar en 1 a 3 meses, esta comparando todas las marcas en segmento suv, en seguimiento","25646280":"Cliente dejo de responderle al apv, se refuerza las llamadas por ublux y telefono de oficina diario, y mensajes tambien.","25616914":"Cliente dejo de responderle al apv, se refuerza las llamadas por ublux y telefono de oficina diario, y mensajes tambien.","25684424":"Apv Valeria comenta que ya se puso en contacto con el cliente pero no le ha dado respuesta, reforzarmos seguimiento con llamada en ambos medios (ublux y telefono de oficina) y mensaje","25613390":"Apv Sirenia comenta que esta en comunicación con el cliente, le comparte la información solicitada, en seguimiento","25598958":"Apv Julio comenta que no le ha dado respuesta el cliente, desvia las llamadas del ublux y del teléfono de oficina, y los mensajes los deja en visto","25314742":"Lead tenia cita a inicios de abril, porque por su trabajo labora fuera de Salina Cruz, sin embargo no asistio a cita, se buscó recontactar pero el cliente no responde.","25551776":"Lead no asisitió a cita, canceló dos veces, se le recontacto por llamadas del ublux y de oficina, pero no dio respuesta, apv Didiana nos manda la captura donde el cliente le dice que retomará la visita en otro momento, el le indica cuando.","25575184":"Lead no asisitió a cita, cancelo dos veces, se le recontacto por llamadas del ublux y de oficina, pero no dio respuesta, apv Jose nos indica que el cliente no le responde sus mensajes","25507920":"Lead asistió a cita, y se levantó solicitud de crédito, a espera de respuesta por parte de la financiera CREDINISSAN","25650936":"Lead no asisitió a cita, apv Didiana comenta que ha estado en comunicación con ella.","25595530":"apv le compartió opciones de algunas unidades cliente ya no responde se le dejo mensaje de seguimiento","25658812":"se dara seguimiento ya que no responde y apv no contesta","25591160":"cte indica en llamada que se encuentra intereasdo sin embargo no cuenta con el enganche que le solicitan esperará un par de meses para completar","25584252":"solicitud rechazada de ella y de su hija","25602010":"marcar finales de abril para retomar tramite ya que requiere juntar parte del enganche","25578784":"se deja mensaje no responde","25594240":"en espera de status","25584706":"credito aprobado cliente indica que nos pongamos en contacto el 20 de Abril para poder retomar tramite con posible pago de enganche","25673392":"cte comparte documento para consulta de buro pero aun no ha firmado se realiza llamada de seguimeinto","25666342":"en espera de confirmacion de cte","25657576":"en espera de confimacion si cliente se encuentra interesado se deja mensaje","25570972":"cte indica no estar interesada en continuar con su trámite","25419142":"solicita reagendar cita sin embargo no responde llamadas ni mensjaes","25607660":"en espera de confirmacion si el cte sigue interesado","25672174":"no trae mucho enganche para adquirir algun vehiculo","25670458":"cte acude a a la agencia pero no se decide por alguna de las camionetas ya que se le incrementa la mensualidad","25491108":"credito rechazado cte no responde las llamadas ni mensajes","25602058":"credito condicionado le piden obligado solidario cte no ha dado respuesta"};
+
+const STEPS=[{key:'asignacion',short:'A',lbl:'Asig.'},{key:'cita',short:'C',lbl:'Cita'},{key:'show',short:'S',lbl:'Show'},{key:'documentos',short:'D',lbl:'Docs'},{key:'solicitud',short:'R',lbl:'Sol.'},{key:'factura',short:'F',lbl:'Fac.'}];
+const AGENCIES=Object.keys(RAW);
+let current=AGENCIES[0];
+
+// totals
+let gtTotal=0,gtCitas=0,gtFac=0;
+AGENCIES.forEach(ag=>{Object.values(RAW[ag]).forEach(leads=>{leads.forEach(l=>{gtTotal++;if(l.cita)gtCitas++;if(l.factura)gtFac++;});});});
+document.getElementById('hdr-total').textContent=gtTotal;
+document.getElementById('hdr-citas').textContent=gtCitas;
+document.getElementById('hdr-facturas').textContent=gtFac;
+
+// nav
+const nav=document.getElementById('agencyNav');
+AGENCIES.forEach(ag=>{
+  const total=Object.values(RAW[ag]).reduce((a,l)=>a+l.length,0);
+  const btn=document.createElement('button');
+  btn.className='nav-btn'+(ag===current?' active':'');
+  btn.innerHTML=ag+`<span class="nav-badge">${total}</span>`;
+  btn.onclick=()=>{current=ag;render();document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',AGENCIES[i]===ag));};
+  nav.appendChild(btn);
+});
+
+function progColor(p){return p===100?'#059669':p>=60?'#d97706':p>=30?'#3b82f6':'#94a3b8'}
+function leadProgress(l){return STEPS.filter(s=>l[s.key]).length}
+function agencyStats(d){let total=0,citas=0,shows=0,sols=0,facs=0;Object.values(d).forEach(leads=>{leads.forEach(l=>{total++;if(l.cita)citas++;if(l.show)shows++;if(l.solicitud)sols++;if(l.factura)facs++;});});return{total,citas,shows,sols,facs}}
+
+// modal
+const modal=document.getElementById('commentModal');
+const modalName=document.getElementById('modalName');
+const modalSub=document.getElementById('modalSub');
+const modalComment=document.getElementById('modalComment');
+const modalMeta=document.getElementById('modalMeta');
+document.getElementById('modalClose').onclick=closeModal;
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function openModal(l,apv){
+  const comment=COMMENTS[l.id]||'Sin comentario registrado.';
+  modalName.textContent=l.nombre;
+  modalSub.textContent=`#${l.id} · ${l.auto||'—'} · ${apv}`;
+  modalComment.textContent=comment;
+  modalMeta.innerHTML=`
+    <span class="modal-chip">Agente: ${l.agente}</span>
+    ${l.cita?`<span class="modal-chip">Cita: ${l.cita}</span>`:''}
+    ${l.factura?`<span class="modal-chip" style="background:#e6f4ed;border-color:#0a6640;color:#0a6640">✓ Facturado: ${l.factura}</span>`:''}
+  `;
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){modal.classList.remove('open');document.body.style.overflow='';}
+
+function render(){
+  const ag=RAW[current];
+  const st=agencyStats(ag);
+  const apvList=Object.keys(ag);
+  const sorted=[...apvList.filter(k=>k!=='APV NO ASIGNADO'),...apvList.filter(k=>k==='APV NO ASIGNADO')];
+
+  let html=`
+    <div class="agency-section visible">
+      <div class="agency-title-bar">
+        <div class="agency-name">${current}</div>
+        <div class="agency-subtitle">Nissan · BDC 7</div>
+      </div>
+      <div class="agency-stats">
+        <div class="astat"><div class="astat-val">${st.total}</div><div class="astat-key">Leads</div></div>
+        <div class="astat"><div class="astat-val blue">${st.citas}</div><div class="astat-key">Citas</div></div>
+        <div class="astat"><div class="astat-val gold">${st.shows}</div><div class="astat-key">Shows</div></div>
+        <div class="astat"><div class="astat-val red">${st.sols}</div><div class="astat-key">Solic.</div></div>
+        <div class="astat"><div class="astat-val green">${st.facs}</div><div class="astat-key">Fact.</div></div>
+      </div>`;
+
+  sorted.forEach((apv,gi)=>{
+    const leads=ag[apv];
+    const isUnassigned=apv==='APV NO ASIGNADO';
+    const facCount=leads.filter(l=>l.factura).length;
+    const delay=gi*0.07;
+
+    html+=`
+      <div class="apv-group" style="animation-delay:${delay}s">
+        <div class="apv-header${isUnassigned?' unassigned':''}">
+          <div class="apv-name">${apv}</div>
+          <div class="apv-chips">
+            ${facCount?`<span class="apv-fac-badge">✓ ${facCount} fact.</span>`:''}
+            <span class="apv-count">${leads.length} lead${leads.length>1?'s':''}</span>
+          </div>
+        </div>
+
+        <!-- DESKTOP TABLE -->
+        <div class="leads-table-wrap">
+          <table><thead><tr>
+            <th>ID</th><th>Prospecto</th><th>Agente</th><th>Auto</th>
+            <th style="text-align:center">Pipeline</th>
+            <th>Asignación</th><th>Cita</th><th>Show</th><th>Docs</th><th>Sol.</th><th>Factura</th>
+            <th>Avance</th><th>Comentario</th>
+          </tr></thead><tbody>`;
+
+    leads.forEach(l=>{
+      const prog=leadProgress(l);
+      const pct=Math.round(prog/STEPS.length*100);
+      const color=progColor(pct);
+      const hasComment=!!COMMENTS[l.id];
+
+      html+=`<tr>
+        <td class="td-id">#${l.id}</td>
+        <td class="td-nombre">${l.nombre}</td>
+        <td><span class="agent-badge ag-${l.agente}">${l.agente}</span></td>
+        <td class="td-auto">${l.auto&&l.auto!=='-'?l.auto:'<span style="color:#d1d5db">—</span>'}</td>
+        <td><div class="pipeline" style="justify-content:center">
+          ${STEPS.map(s=>`<div class="step"><div class="step-dot ${l[s.key]?'done'+(s.key==='factura'?' final':''):'pend'}">${s.short}</div></div>`).join('')}
+        </div></td>
+        <td class="date-cell ${l.asignacion?'':'empty'}">${l.asignacion||'—'}</td>
+        <td class="date-cell ${l.cita?'':'empty'}">${l.cita||'—'}</td>
+        <td class="date-cell ${l.show?'':'empty'}">${l.show||'—'}</td>
+        <td class="date-cell ${l.documentos?'':'empty'}">${l.documentos||'—'}</td>
+        <td class="date-cell ${l.solicitud?'':'empty'}">${l.solicitud||'—'}</td>
+        <td class="date-cell ${l.factura?'':'empty'}" style="${l.factura?'font-weight:700;color:#059669':''}">${l.factura||'—'}</td>
+        <td><div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
+          <div class="prog-pct">${pct}%</div>
+        </div></td>
+        <td><button class="btn-comment ${hasComment?'has-comment':''}" onclick='openModal(${JSON.stringify(l)},${JSON.stringify(apv)})'>${hasComment?'💬 Ver':'—'}</button></td>
+      </tr>`;
+    });
+
+    html+=`</tbody></table></div>
+
+        <!-- MOBILE CARDS -->
+        <div class="lead-cards">`;
+
+    leads.forEach(l=>{
+      const prog=leadProgress(l);
+      const pct=Math.round(prog/STEPS.length*100);
+      const color=progColor(pct);
+      const hasComment=!!COMMENTS[l.id];
+
+      html+=`<div class="lead-card" onclick='openModal(${JSON.stringify(l)},${JSON.stringify(apv)})'>
+          <div class="lc-top">
+            <div>
+              <div class="lc-nombre">${l.nombre}</div>
+              <div class="lc-id">#${l.id}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+              <span class="agent-badge ag-${l.agente}">${l.agente}</span>
+              ${hasComment?'<span style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#92400e;background:#fef3c7;border:1px solid #d97706;border-radius:2px;padding:1px 6px;font-weight:700">💬 Comentario</span>':''}
+            </div>
+          </div>
+          <div class="lc-mid">
+            <span class="lc-auto">${l.auto&&l.auto!=='-'?l.auto:'—'}</span>
+            ${l.cita?`<span style="font-size:10px;color:var(--muted)">📅 ${l.cita}</span>`:''}
+            ${l.factura?`<span style="font-size:10px;color:#059669;font-weight:700">✓ Facturado</span>`:''}
+          </div>
+          <div class="lc-pipeline">
+            ${STEPS.map(s=>`<div class="lc-step"><div class="lc-dot ${l[s.key]?'done'+(s.key==='factura'?' final':''):'pend'}">${s.short}</div><span class="lc-lbl">${s.lbl}</span></div>`).join('')}
+          </div>
+          <div class="lc-bottom">
+            <div class="lc-prog">
+              <div class="lc-bar"><div class="lc-fill" style="width:${pct}%;background:${color}"></div></div>
+              <div class="lc-pct">${pct}%</div>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    html+=`</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot"></div>Completado</div>
+          <div class="legend-item"><div class="legend-dot pend"></div>Pendiente</div>
+          <div class="legend-item" style="margin-left:auto;color:#059669;font-weight:700">
+            ${leads.filter(l=>l.factura).length>0?leads.filter(l=>l.factura).length+' factura(s)':''}
+          </div>
+        </div>
+      </div>`;
+  });
+
+  html+=`</div>`;
+  document.getElementById('mainContent').innerHTML=html;
+}
+
+render();
+</script>
+</body>
+</html>
